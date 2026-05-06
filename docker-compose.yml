@@ -1,0 +1,14 @@
+﻿services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: peladas
+      POSTGRES_PASSWORD: peladas123
+      POSTGRES_DB: peladas_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
