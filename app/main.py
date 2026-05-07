@@ -60,7 +60,11 @@ def detalhe_partida(partida_id: int, request: Request, db: Session = Depends(get
         Presenca.partida_id == partida_id,
         Presenca.confirmado == True
     ).all()
-    jogadores_lista = db.query(Jogador).filter(Jogador.ativo == True).all()
+    ids_confirmados = [p.jogador_id for p in confirmados]
+    jogadores_lista = db.query(Jogador).filter(
+        Jogador.ativo == True,
+        Jogador.id.notin_(ids_confirmados)
+    ).all()
     return templates.TemplateResponse(request, 'partida_detalhe.html', {
         'partida': partida,
         'confirmados': confirmados,
