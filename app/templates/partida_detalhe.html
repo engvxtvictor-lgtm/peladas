@@ -29,13 +29,28 @@
         {% for p in confirmados %}
         <div class="flex justify-between items-center py-2 border-b last:border-0">
             <span class="font-medium">{{ p.jogador.nome }}</span>
-            <span class="text-sm {% if p.pago %}text-green-600{% else %}text-red-500{% endif %}">
-                {% if p.pago %}✓ Pago{% else %}Pendente{% endif %}
-            </span>
+            <form method="post" action="/partidas/{{ partida.id }}/pagamento/{{ p.jogador.id }}">
+                <button type="submit" class="text-sm px-3 py-1 rounded-full
+                    {% if p.pago %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-500{% endif %}">
+                    {% if p.pago %}✓ Pago{% else %}Pendente{% endif %}
+                </button>
+            </form>
         </div>
         {% else %}
         <p class="text-gray-400 text-sm">Nenhum confirmado ainda.</p>
         {% endfor %}
+
+        {% if confirmados %}
+        <div class="mt-4 pt-4 border-t">
+            <p class="text-sm text-gray-500">
+                💰 Total arrecadado:
+                <span class="font-bold text-green-600">
+                    R$ {{ "%.2f"|format(confirmados|selectattr("pago")|list|length * partida.valor_por_jogador) }}
+                </span>
+                de R$ {{ "%.2f"|format(confirmados|length * partida.valor_por_jogador) }}
+            </p>
+        </div>
+        {% endif %}
     </div>
 
     <div class="bg-white rounded-lg shadow p-6">

@@ -101,3 +101,14 @@ def sortear_times_html(partida_id: int, request: Request, db: Session = Depends(
         'jogadores': jogadores_lista,
         'times': times_enumerados
     })
+
+@app.post('/partidas/{partida_id}/pagamento/{jogador_id}')
+def marcar_pagamento(partida_id: int, jogador_id: int, db: Session = Depends(get_db)):
+    presenca = db.query(Presenca).filter(
+        Presenca.partida_id == partida_id,
+        Presenca.jogador_id == jogador_id
+    ).first()
+    if presenca:
+        presenca.pago = not presenca.pago
+        db.commit()
+    return RedirectResponse(url=f'/partidas/{partida_id}', status_code=303)
