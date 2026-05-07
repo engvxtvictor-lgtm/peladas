@@ -1,6 +1,7 @@
 ﻿from fastapi import FastAPI
 from fastapi.templating import Jinja2Templates
 from app.database import engine, Base
+import app.models
 
 Base.metadata.create_all(bind=engine)
 
