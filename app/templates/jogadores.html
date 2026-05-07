@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Jogadores - Peladas{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-green-700">👥 Jogadores</h1>
+    <button onclick="document.getElementById('form-cadastro').classList.toggle('hidden')"
+        class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+        + Novo Jogador
+    </button>
+</div>
+
+<div id="form-cadastro" class="hidden bg-white rounded-lg shadow p-6 mb-6">
+    <h2 class="text-lg font-bold mb-4">Cadastrar Jogador</h2>
+    <form method="post" action="/jogadores/cadastrar">
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Nome *</label>
+                <input type="text" name="nome" required
+                    class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Telefone</label>
+                <input type="text" name="telefone"
+                    class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Posição</label>
+                <select name="posicao" class="w-full border rounded px-3 py-2">
+                    <option value="linha">Linha</option>
+                    <option value="goleiro">Goleiro</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Habilidade (1-10)</label>
+                <input type="number" name="habilidade" min="1" max="10" value="5"
+                    class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+            </div>
+        </div>
+        <button type="submit" class="mt-4 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
+            Salvar
+        </button>
+    </form>
+</div>
+
+<div id="lista-jogadores" class="grid grid-cols-1 gap-4">
+    {% for jogador in jogadores %}
+    <div class="bg-white rounded-lg shadow p-4 flex justify-between items-center">
+        <div>
+            <p class="font-bold text-lg">{{ jogador.nome }}</p>
+            <p class="text-sm text-gray-500">{{ jogador.posicao or 'Sem posição' }} · Habilidade: {{ jogador.habilidade }}/10</p>
+            <p class="text-sm text-gray-400">{{ jogador.telefone or 'Sem telefone' }}</p>
+        </div>
+        <div class="text-2xl">
+            {% if jogador.posicao == 'goleiro' %}🧤{% else %}⚽{% endif %}
+        </div>
+    </div>
+    {% else %}
+    <p class="text-gray-500 text-center py-8">Nenhum jogador cadastrado ainda.</p>
+    {% endfor %}
+</div>
+{% endblock %}
