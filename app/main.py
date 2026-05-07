@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from app.database import get_db, engine, Base
 from app.models.jogador import Jogador
-from app.models.partida import Partida
+from app.models.partida import Partida, Presenca
 from datetime import datetime
 import app.models
 from app.routes import jogadores, partidas
@@ -50,3 +50,54 @@ def criar_partida_html(request: Request, db: Session = Depends(get_db),
     db.add(partida)
     db.commit()
     return RedirectResponse(url='/partidas', status_code=303)
+
+@app.get('/partidas/{partida_id}', response_class=HTMLResponse)
+def detalhe_partida(partida_id: int, request: Request, db: Session = Depends(get_db)):
+    partida = db.query(Partida).filter(Partida.id == partida_id).first()
+    if not partida:
+        return RedirectResponse(url='/partidas')
+    confirmados = db.query(Presenca).filter(
+        Presenca.partida_id == partida_id,
+        Presenca.confirmado == True
+    ).all()
+    jogadores_lista = db.query(Jogador).filter(Jogador.ativo == True).all()
+    return templates.TemplateResponse(request, 'partida_detalhe.html', {
+        'partida': partida,
+        'confirmados': confirmados,
+        'jogadores': jogadores_lista,
+        'times': None
+    })
+
+@app.post('/partidas/{partida_id}/confirmar')
+def confirmar_presenca_html(partida_id: int, db: Session = Depends(get_db),
+    jogador_id: int = Form(...)):
+    presenca = db.query(Presenca).filter(
+        Presenca.partida_id == partida_id,
+        Presenca.jogador_id == jogador_id
+    ).first()
+    if presenca:
+        presenca.confirmado = True
+    else:
+        presenca = Presenca(partida_id=partida_id, jogador_id=jogador_id, confirmado=True)
+        db.add(presenca)
+    db.commit()
+    return RedirectResponse(url=f'/partidas/{partida_id}', status_code=303)
+
+@app.post('/partidas/{partida_id}/sortear', response_class=HTMLResponse)
+def sortear_times_html(partida_id: int, request: Request, db: Session = Depends(get_db)):
+    from app.services.sorteio import sortear_times
+    partida = db.query(Partida).filter(Partida.id == partida_id).first()
+    confirmados = db.query(Presenca).filter(
+        Presenca.partida_id == partida_id,
+        Presenca.confirmado == True
+    ).all()
+    jogadores_confirmados = [p.jogador for p in confirmados]
+    times = sortear_times(jogadores_confirmados)
+    times_enumerados = list(enumerate(times, start=1))
+    jogadores_lista = db.query(Jogador).filter(Jogador.ativo == True).all()
+    return templates.TemplateResponse(request, 'partida_detalhe.html', {
+        'partida': partida,
+        'confirmados': confirmados,
+        'jogadores': jogadores_lista,
+        'times': times_enumerados
+    })

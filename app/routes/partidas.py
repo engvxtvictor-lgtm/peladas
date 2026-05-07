@@ -7,18 +7,18 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional, List
 
-router = APIRouter(prefix="/partidas", tags=["partidas"])
+router = APIRouter(prefix="/api/partidas", tags=["partidas"])
 
 class PartidaCreate(BaseModel):
     data: datetime
     local: Optional[str] = None
-    valor_por_jogador: Optional[int] = 0
+    valor_por_jogador: Optional[float] = 0
 
 class PartidaResponse(BaseModel):
     id: int
     data: datetime
     local: Optional[str]
-    valor_por_jogador: int
+    valor_por_jogador: float
     status: str
     criado_em: datetime
 
@@ -39,13 +39,6 @@ def criar_partida(partida: PartidaCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_partida)
     return db_partida
-
-@router.get("/{partida_id}", response_model=PartidaResponse)
-def buscar_partida(partida_id: int, db: Session = Depends(get_db)):
-    partida = db.query(Partida).filter(Partida.id == partida_id).first()
-    if not partida:
-        raise HTTPException(status_code=404, detail="Partida não encontrada")
-    return partida
 
 @router.post("/{partida_id}/confirmar")
 def confirmar_presenca(partida_id: int, dados: PresencaCreate, db: Session = Depends(get_db)):

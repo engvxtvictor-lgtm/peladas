@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Partida - Peladas{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="/partidas" class="text-blue-600 hover:underline">← Voltar</a>
+</div>
+
+<div class="bg-white rounded-lg shadow p-6 mb-6">
+    <div class="flex justify-between items-start">
+        <div>
+            <h1 class="text-2xl font-bold">⚽ {{ partida.data.strftime('%d/%m/%Y às %H:%M') }}</h1>
+            <p class="text-gray-500 mt-1">📍 {{ partida.local or 'Local não definido' }}</p>
+            <p class="text-gray-500">💰 R$ {{ partida.valor_por_jogador }} por jogador</p>
+        </div>
+        <span class="px-3 py-1 rounded-full text-sm font-medium
+            {% if partida.status == 'aberta' %}bg-green-100 text-green-700
+            {% elif partida.status == 'confirmada' %}bg-blue-100 text-blue-700
+            {% else %}bg-gray-100 text-gray-600{% endif %}">
+            {{ partida.status }}
+        </span>
+    </div>
+</div>
+
+<div class="grid grid-cols-2 gap-6">
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-bold mb-4">✅ Confirmados ({{ confirmados|length }})</h2>
+        {% for p in confirmados %}
+        <div class="flex justify-between items-center py-2 border-b last:border-0">
+            <span class="font-medium">{{ p.jogador.nome }}</span>
+            <span class="text-sm {% if p.pago %}text-green-600{% else %}text-red-500{% endif %}">
+                {% if p.pago %}✓ Pago{% else %}Pendente{% endif %}
+            </span>
+        </div>
+        {% else %}
+        <p class="text-gray-400 text-sm">Nenhum confirmado ainda.</p>
+        {% endfor %}
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-bold mb-4">➕ Confirmar Presença</h2>
+        <form method="post" action="/partidas/{{ partida.id }}/confirmar">
+            <select name="jogador_id" class="w-full border rounded px-3 py-2 mb-3">
+                {% for jogador in jogadores %}
+                <option value="{{ jogador.id }}">{{ jogador.nome }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">
+                Confirmar
+            </button>
+        </form>
+    </div>
+</div>
+
+{% if confirmados|length >= 2 %}
+<div class="bg-white rounded-lg shadow p-6 mt-6">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-bold">🎲 Sorteio de Times</h2>
+        <form method="post" action="/partidas/{{ partida.id }}/sortear">
+            <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+                Sortear Times
+            </button>
+        </form>
+    </div>
+    {% if times %}
+    <div class="grid grid-cols-2 gap-4">
+        {% for i, time in times %}
+        <div class="border rounded-lg p-4">
+            <h3 class="font-bold text-center mb-2">Time {{ i }}</h3>
+            {% for jogador in time %}
+            <p class="text-sm py-1 border-b last:border-0">{{ jogador.nome }} ({{ jogador.habilidade }})</p>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}
