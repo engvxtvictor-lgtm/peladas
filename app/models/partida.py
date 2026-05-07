@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, Float, String, DateTime, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.database import Base
@@ -9,7 +9,7 @@ class Partida(Base):
     id = Column(Integer, primary_key=True, index=True)
     data = Column(DateTime, nullable=False)
     local = Column(String, nullable=True)
-    valor_por_jogador = Column(Integer, default=0)
+    valor_por_jogador = Column(Float, default=0)
     status = Column(String, default="aberta")  # aberta, confirmada, encerrada
     criado_em = Column(DateTime, server_default=func.now())
 

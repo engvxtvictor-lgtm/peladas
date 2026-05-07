@@ -4,6 +4,8 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from app.database import get_db, engine, Base
 from app.models.jogador import Jogador
+from app.models.partida import Partida
+from datetime import datetime
 import app.models
 from app.routes import jogadores, partidas
 
@@ -34,3 +36,17 @@ def cadastrar_jogador_html(request: Request, db: Session = Depends(get_db),
     db.commit()
     db.refresh(jogador)
     return RedirectResponse(url='/jogadores', status_code=303)
+
+@app.get('/partidas', response_class=HTMLResponse)
+def pagina_partidas(request: Request, db: Session = Depends(get_db)):
+    lista = db.query(Partida).order_by(Partida.data.desc()).all()
+    return templates.TemplateResponse(request, 'partidas.html', {'partidas': lista})
+
+@app.post('/partidas/criar')
+def criar_partida_html(request: Request, db: Session = Depends(get_db),
+    data: str = Form(...), local: str = Form(None),
+    valor_por_jogador: float = Form(0)):
+    partida = Partida(data=datetime.fromisoformat(data), local=local, valor_por_jogador=valor_por_jogador)
+    db.add(partida)
+    db.commit()
+    return RedirectResponse(url='/partidas', status_code=303)
