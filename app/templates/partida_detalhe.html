@@ -4,6 +4,11 @@
 
 {% block content %}
 <div class="mb-4">
+    {% if request.query_params.get('erro') == 'lotado' %}
+<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    ⛔ Partida lotada! O número máximo de jogadores já foi atingido.
+</div>
+{% endif %}
     <a href="/partidas" class="text-blue-600 hover:underline">← Voltar</a>
 </div>
 

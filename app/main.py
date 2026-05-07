@@ -45,8 +45,8 @@ def pagina_partidas(request: Request, db: Session = Depends(get_db)):
 @app.post('/partidas/criar')
 def criar_partida_html(request: Request, db: Session = Depends(get_db),
     data: str = Form(...), local: str = Form(None),
-    valor_por_jogador: float = Form(0)):
-    partida = Partida(data=datetime.fromisoformat(data), local=local, valor_por_jogador=valor_por_jogador)
+    valor_por_jogador: float = Form(0), max_jogadores: int = Form(10)):
+    partida = Partida(data=datetime.fromisoformat(data), local=local, valor_por_jogador=valor_por_jogador, max_jogadores=max_jogadores)
     db.add(partida)
     db.commit()
     return RedirectResponse(url='/partidas', status_code=303)
@@ -75,6 +75,13 @@ def detalhe_partida(partida_id: int, request: Request, db: Session = Depends(get
 @app.post('/partidas/{partida_id}/confirmar')
 def confirmar_presenca_html(partida_id: int, db: Session = Depends(get_db),
     jogador_id: int = Form(...)):
+    partida = db.query(Partida).filter(Partida.id == partida_id).first()
+    confirmados = db.query(Presenca).filter(
+        Presenca.partida_id == partida_id,
+        Presenca.confirmado == True
+    ).count()
+    if confirmados >= partida.max_jogadores:
+        return RedirectResponse(url=f'/partidas/{partida_id}?erro=lotado', status_code=303)
     presenca = db.query(Presenca).filter(
         Presenca.partida_id == partida_id,
         Presenca.jogador_id == jogador_id

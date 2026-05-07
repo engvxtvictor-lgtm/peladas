@@ -10,6 +10,7 @@ class Partida(Base):
     data = Column(DateTime, nullable=False)
     local = Column(String, nullable=True)
     valor_por_jogador = Column(Float, default=0)
+    max_jogadores = Column(Integer, default=10)
     status = Column(String, default="aberta")  # aberta, confirmada, encerrada
     criado_em = Column(DateTime, server_default=func.now())
 
