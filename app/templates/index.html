@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Início - Peladas{% endblock %}
+
+{% block content %}
+<div class="text-center py-12">
+    <h1 class="text-4xl font-bold text-green-700 mb-4">⚽ Sistema de Peladas</h1>
+    <p class="text-gray-600 mb-8">Organize sua pelada com facilidade</p>
+
+    <div class="grid grid-cols-2 gap-6 max-w-md mx-auto">
+        <a href="/jogadores" class="bg-green-600 text-white rounded-lg p-6 hover:bg-green-700 transition">
+            <div class="text-3xl mb-2">👥</div>
+            <div class="font-bold">Jogadores</div>
+            <div class="text-sm opacity-80">Cadastrar e gerenciar</div>
+        </a>
+        <a href="/partidas" class="bg-blue-600 text-white rounded-lg p-6 hover:bg-blue-700 transition">
+            <div class="text-3xl mb-2">📅</div>
+            <div class="font-bold">Partidas</div>
+            <div class="text-sm opacity-80">Agendar e organizar</div>
+        </a>
+    </div>
+</div>
+{% endblock %}

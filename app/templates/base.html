@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Peladas{% endblock %}</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <nav class="bg-green-700 text-white p-4 shadow">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <a href="/" class="text-xl font-bold">⚽ Sistema de Peladas</a>
+            <div class="space-x-4">
+                <a href="/jogadores" class="hover:underline">Jogadores</a>
+                <a href="/partidas" class="hover:underline">Partidas</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto p-6">
+        {% block content %}{% endblock %}
+    </main>
+
+</body>
+</html>
